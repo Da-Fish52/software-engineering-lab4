@@ -1,0 +1,29 @@
+@startuml B1_恒温水箱状态图
+title 恒温水箱状态图（20℃～100℃）
+
+[*] --> Checking : start\n通电启动
+
+state Checking : 检查状态\nentry / 读取温度与水量传感器
+state Boiling : 烧水状态\nentry / 接通继电器电源加热
+state Idle : 停止加热状态\nentry / 断开继电器电源
+state Sleeping : 休眠状态\n23:00 进入 / 07:00 退出
+state Broken : 故障状态\nentry / 断开电源
+state Repairing : 维修状态\n人工维修，完成后复位
+
+Checking --> Boiling : 温度 < 20℃ 且 有水\n/ 打开继电器电源
+Checking --> Idle : 温度 < 20℃ 但 无水\n/ 不打开电源
+
+Boiling --> Idle : 温度 ≥ 100℃\n/ 断开电源
+
+Idle --> Boiling : 温度 < 20℃ 且 有水
+
+Boiling --> Sleeping : 23:00 自动断电
+Idle --> Sleeping : 23:00 自动断电
+
+Sleeping --> Checking : 07:00 自动进入\n恒温烧水过程
+
+Boiling --> Broken : 水箱烧坏
+Broken --> Repairing : 送修
+Repairing --> Checking : 维修完成复位
+
+@enduml
