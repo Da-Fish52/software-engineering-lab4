@@ -1,0 +1,18 @@
+@startuml B3_字符串提取状态图
+title 源文件字符串提取状态图（处理转义 \）
+
+[*] --> Scanning
+
+state Scanning : 扫描普通字符\nScanning\n（位于字符串之外）
+state InString : 读取字符串\nInString\n（位于双引号内部）
+state Output : 输出字符串\nOutput\ndo / 加入结果集
+state Escaped : 读取转义字符\nEscaped\n下一个字符原样保留
+
+Scanning --> Scanning : 读到普通字符
+Scanning --> InString : 遇到 "
+InString --> Output : 遇到闭合 "
+InString --> Escaped : 遇到反斜杠 \
+Escaped --> InString : 转义完成\n（\" 不结束字符串）
+Output --> Scanning : 继续扫描剩余内容
+
+@enduml
